@@ -3,6 +3,7 @@ from src.ingestor import ingest_all_mhtml
 from src.processor import process_all_html
 from src.loader import load_all_jsons
 from src.profiler import run_data_profile
+import sys
 
 SOURCE_DIR = Path("data/0_source")
 BRONZE_DIR = Path("data/1_bronze")
@@ -20,20 +21,48 @@ def run_gold():
     load_all_jsons(input_dir, output_dir)
 
 def run_silver():
-	input_dir = BRONZE_DIR
-	output_dir = SILVER_DIR
-    #process_all_html(input_dir, output_dir)
+    input_dir = BRONZE_DIR
+    output_dir = SILVER_DIR
+    process_all_html(input_dir, output_dir)
 
 def run_bronze():
     input_dir = SOURCE_DIR
     output_dir = BRONZE_DIR
     ingest_all_mhtml(input_dir, output_dir)
-      
 
+def run_all():
+    run_bronze()
+    print()
+
+    run_silver()
+    print()
+
+    run_gold()
+    print()
+
+    run_profiler()
+    
 def main():
-    print("Hello from week1!") 
-    # ORCHESTRATION TO BE IMPLEMENTED HERE
+    if len(sys.argv) < 2:
+        print("Usage: python main.py [ingest|process|load|profile|all]")
+        return
 
+    command = sys.argv[1]
+
+    commands = {
+        "ingest": run_bronze,
+        "process": run_silver,
+        "load": run_gold,
+        "profile": run_profiler,
+        "all": run_all        
+    }
+
+    action = commands.get(command)
+
+    if action:
+        action()
+    else:
+        print(f"Unknown command: {command}")
 
 if __name__ == "__main__":
     main()
