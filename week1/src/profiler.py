@@ -2,16 +2,19 @@ from pathlib import Path
 import sqlite3
 
 def run_data_profile(db_path):
+    """
+    Analyzes the loaded data and prints a simple data quality report
+    """
     db_path = Path(db_path)
 
     if not db_path.exists():
         print(f"❌ Database not found at {db_path}")
-        return
+        return  # Early exit if database is missing, avoid creating a new empty database
 
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+    connection = sqlite3.connect(db_path)   # Connects to the existing database
+    cursor = connection.cursor()    # Cursor executes SQL commands
 
-    # Total records
+    # Total rows in the jobs table
     cursor.execute(
         """
         SELECT COUNT(*)
@@ -19,9 +22,9 @@ def run_data_profile(db_path):
         """
     )
 
-    total_records = cursor.fetchone()[0]
+    total_records = cursor.fetchone()[0]    # fetchone() returns a tuple like (total_records,) so we take the first element with [0]
 
-    # NULL counts
+    # NULL counts for job_title, company, description
     cursor.execute(
         """
         SELECT
@@ -32,7 +35,7 @@ def run_data_profile(db_path):
         """
     )
 
-    null_counts = cursor.fetchone()
+    null_counts = cursor.fetchone()   # tuple like (missing_job_titles, missing_companies, missing_descriptions)
 
     # Average job descriptions length (in characters)
     cursor.execute(

@@ -3,7 +3,10 @@ import json
 import sqlite3
 
 def create_table(cursor):
-    cursor.execute(
+    """
+    Creates the jobs table if it doesn't exist
+    """
+    cursor.execute(     # Sends SQL command to SQLite
         """
         CREATE TABLE IF NOT EXISTS jobs (
             source_id TEXT PRIMARY KEY,
@@ -16,6 +19,9 @@ def create_table(cursor):
     ) # prevents crashes if DB already exists
 
 def load_all_jsons(input_dir, output_dir):
+    """
+    Reads JSON records and inserts into DB
+    """
     print("🥇 Gold: Starting database load...\n")
 
     input_path = Path(input_dir)
@@ -29,17 +35,17 @@ def load_all_jsons(input_dir, output_dir):
         print(f"⚠️ Input directory does not exist: {input_path}")
         return
 
-    json_files = list(input_path.glob("*.json"))
+    json_files = list(input_path.glob("*.json"))    # get all processed JSON files
 
-    # Handle empty directory
+    # Handle empty directory, stop if no JSON files to load
     if not json_files:
         print("⚠️ No JSON files found.")
         return
 
-    db_path = output_path / "jobs.db"
+    db_path = output_path / "jobs.db" # database file will be created in the gold directory
 
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+    connection = sqlite3.connect(db_path)   # opens/create SQLite database
+    cursor = connection.cursor()    # cursor executes SQL commands
 
     create_table(cursor)
 
@@ -47,10 +53,11 @@ def load_all_jsons(input_dir, output_dir):
     inserted = 0
     skipped = 0
 
+    # Iterates through each JSON file and attempts to insert into the database
     for file_path in json_files:
         try:
             with open(file_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
+                data = json.load(file)  # load JSON file into a Python dictionary
 
             cursor.execute(
                 """
@@ -72,7 +79,7 @@ def load_all_jsons(input_dir, output_dir):
                 ),
             ) # skip insertion if duplicate source_id exists
 
-            # rowcount = 1 means inserted, else means ignored (duplicate)
+            # rowcount = 1 means inserted, rowcount = 0 means ignore duplicate
             if cursor.rowcount == 1:
                 print(f"✅ Inserted: {file_path.name}")
                 inserted += 1
@@ -83,8 +90,8 @@ def load_all_jsons(input_dir, output_dir):
         except Exception as error:
             print(f"❌ Failed: {file_path.name} | Error: {error}")
 
-    connection.commit()
-    connection.close()
+    connection.commit()  # saves changes to the database
+    connection.close()  # closes the database connection
 
     print("\n📊 Gold Summary:")
     print(f"Total: {total} | Inserted: {inserted} | Skipped: {skipped}")

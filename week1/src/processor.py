@@ -1,8 +1,9 @@
 from pathlib import Path
-from bs4 import BeautifulSoup
-from pydantic import BaseModel, ValidationError
-import json
+from bs4 import BeautifulSoup   # to parse HTML and XML documents. It creates a parse tree that can be used to extract data from HTML, don't need to manually parse strings
+from pydantic import BaseModel, ValidationError # BaseModel: schema definition and data validation, ValidationError: catch invalid structured data
+import json     # to read and write JSON files
 
+# Defines the structure of data
 class JobListing(BaseModel):
     source_id: str
     job_title: str
@@ -10,25 +11,34 @@ class JobListing(BaseModel):
     description: str
 
 def clean_text(element):
+    """
+    Cleans text by extracting it from the HTML element, removing extra whitespace
+    """
     if not element:
-        return ""
+        return ""   # Handle None values
 
-    return element.get_text(separator=" ", strip=True)
+    return element.get_text(separator=" ", strip=True) # extracts all the text from the HTML element, separator=" " ensures that text from different tags is separated by a space, strip=True removes leading and trailing whitespace
 
 def extract_source_id(soup):
-    og_url = soup.find("meta", property="og:url")
+    """
+    Extracts source_id from the og:url meta tag
+    """
+    og_url = soup.find("meta", property="og:url")   # looks for tags like <meta property="og:url" content="...">
 
     if not og_url:
-        return ""
+        return ""  # Handle missing meta tag
 
-    url = og_url.get("content", "")
+    url = og_url.get("content", "") # gets the content (url)
 
     if not url:
-        return ""
+        return ""   # Handle missing content
 
-    return url.rstrip("/").split("/")[-1]
+    return url.rstrip("/").split("/")[-1]   # removes trailing slash, splits the URL by slashes, and takes the last item as the source_id
 
 def process_all_html(input_dir, output_dir): 
+    """
+    Reads HTML files and converts them into structured JSON
+    """
     print("🥈 Silver: Starting processing...\n")
 
     input_path = Path(input_dir)
@@ -42,6 +52,7 @@ def process_all_html(input_dir, output_dir):
         print(f"⚠️ Input directory does not exist: {input_path}")
         return
 
+    # get all extracted HTML documents
     html_files = list(input_path.glob("*.html"))
 
     # Handle empty directory
@@ -55,16 +66,16 @@ def process_all_html(input_dir, output_dir):
 
     for file_path in html_files:
         try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                soup = BeautifulSoup(file, "html.parser")
+            with open(file_path, "r", encoding="utf-8") as file:    # opens the HTML file to read
+                soup = BeautifulSoup(file, "html.parser")   # converts raw HTML into a searchable tree
 
-            # Extract field
             source_id = extract_source_id(soup)
 
             title_element = soup.find(attrs={"data-automation": "job-detail-title"})
             company_element = soup.find(attrs={"data-automation": "advertiser-name"})
             description_element = soup.find(attrs={"data-automation": "jobAdDetails"})
 
+            # Converts HTML elements into normalized strings
             job_title = clean_text(title_element)
             company = clean_text(company_element)
             description = clean_text(description_element)
@@ -89,9 +100,9 @@ def process_all_html(input_dir, output_dir):
                     f"⚠️ Missing {', '.join(missing_fields)} in: {file_path.name}"
                 )
                 skipped += 1
-                continue
+                continue    # skip processing if any required field is missing
 
-            # Pydantic validation
+            # Pydantic validation, verify fields exist, correct types
             job_listing = JobListing(
                 source_id=source_id,
                 job_title=job_title,
@@ -99,7 +110,7 @@ def process_all_html(input_dir, output_dir):
                 description=description,
             )
 
-            output_file = output_path / f"{file_path.stem}.json"
+            output_file = output_path / f"{file_path.stem}.json"  # file_path.stem gives the filename without the extension
 
             with open(output_file, "w", encoding="utf-8") as json_file:
                 json.dump(
@@ -107,16 +118,18 @@ def process_all_html(input_dir, output_dir):
                     json_file,
                     indent=2,
                     ensure_ascii=False,
-                )
+                )  # model_dump() converts Pydantic model into a dictionary, which can then be serialized into JSON format
 
             print(f"✅ Processed: {file_path.name}")
             processed += 1
 
+        # Validation errors from Pydantic
         except ValidationError as error:
             print(f"❌ Validation failed: {file_path.name}")
             print(error)
             skipped += 1
 
+        # Other unexpected errors
         except Exception as error:
             print(f"❌ Failed: {file_path.name} | Error: {error}")
             skipped += 1

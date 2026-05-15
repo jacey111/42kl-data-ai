@@ -43,24 +43,22 @@ def run_all():
     run_profiler()
     
 def main():
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2:  # sys.argv is list of command-line arguments. For example, ["main.py", "ingest"]
         print("Usage: python main.py [ingest|process|load|profile|all]")
         return
 
     command = sys.argv[1]
 
-    commands = {
-        "ingest": run_bronze,
-        "process": run_silver,
-        "load": run_gold,
-        "profile": run_profiler,
-        "all": run_all        
-    }
-
-    action = commands.get(command)
-
-    if action:
-        action()
+    if command == "ingest":
+        run_bronze()
+    elif command == "process":
+        run_silver()
+    elif command == "load":
+        run_gold()
+    elif command == "profile":
+        run_profiler()
+    elif command == "all":
+        run_all()
     else:
         print(f"Unknown command: {command}")
 
