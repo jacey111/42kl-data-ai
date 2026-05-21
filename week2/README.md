@@ -23,55 +23,78 @@ Run the following in your terminal:
 ## Clone Repository
 
 git clone <git@github.com:jacey111/42kl-data-ai.git>
+
 cd week2
+
 
 ## Initialize Virtual Environment
 
 uv venv
+
 source .venv/bin/activate
+
 
 ## Install Ollama
 
 Go to: https://ollama.com
+
 Download for your OS
 
+
 OR run
+
 curl -fsSL https://ollama.com/install.sh | sh
+
 
 ## Verify Installation and Ollama API
 
 ollama -v
+
 curl 127.0.0.1:11434
+
 
 ## Download Models
 
 ollama pull llama3.1
+
 ollama pull phi3
+
 ollama pull deepseek-r1:1.5b
+
 
 ## Verify Models
 
 ollama ls
 
+
 ## Create Google AI API Key
 
 Go to: https://aistudio.google.com/
+
 Login
+
 Click “Get API Key”
+
 Create API key
+
 Copy it
 
 ## Store API Key
 
 touch .env
 
+
 Inside .env, include this:
+
 GOOGLE_API_KEY=your_api_key
+
 
 ## Edit .gitignore
 
 Add:
+
 .env
+
 
 ## Edit rate_limits.txt
 
