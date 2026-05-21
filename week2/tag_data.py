@@ -162,6 +162,11 @@ def process_batch(cursor, conn, batch_rows, batch_index: int):
 def tag_data(db_url: str):
     """
     Read jobs from SQLite and populate tech_stack.
+    
+    Input: 
+        - database URL (file path for SQLite)
+    Output: 
+        - None (updates the database in place, and prints the results to the console)
     """
     try:
         conn = sqlite3.connect(db_url)  # connect to the database

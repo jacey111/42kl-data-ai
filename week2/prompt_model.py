@@ -11,11 +11,18 @@ def prompt_model(model: str, prompt: str) -> str :
     """
     Prompt the model with the input prompt and return a text response. 
     It will select the model based on the input model. 
+    
+    Input: 
+        - model: the name of the model to use, must be in OLLAMA_MODELS
+        - prompt: the text prompt to send to the model
+    Output: 
+        - the text response from the model, or an error message if any issue occurs
     """
     if model not in OLLAMA_MODELS:
         return f"[Error] Unavailable model: {model}"
 
     try:
+        # send a POST request to the Ollama server (send data)
         response = requests.post(
             "http://localhost:11434/api/generate",      # Ollama’s inference endpoint
             json={
