@@ -108,6 +108,12 @@ def find_skill_gaps(input_file_path: str, db_url: str) -> SkillGapResult:
      - Get the skill gaps as the difference between market skills and resume skills
      - Return the results in a structured format using SkillGapResult
      - Handle any exceptions and return empty results if any error occurs 
+     
+     Input:
+        - input_file_path: path to the resume text file
+        - db_url: path to the SQLite database containing job postings 
+    Output:
+        - SkillGapResult object containing the skill gaps, resume skills, and market skills
     """
     
     try:
