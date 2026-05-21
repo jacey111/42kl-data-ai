@@ -8,9 +8,7 @@ ALIASES = {
     "git/github": ["git", "github"],
     "js": ["javascript"],
     "py": ["python"],
-    "ts": ["typescript"],
-    "aws": ["aws", "amazon web services"],
-    "gcp": ["gcp", "google cloud platform"]
+    "ts": ["typescript"]
 }   # known aliases for better skill matching
 
 class SkillGapResult(BaseModel):
@@ -143,6 +141,7 @@ def find_skill_gaps(input_file_path: str, db_url: str) -> SkillGapResult:
         )   # avoid crashing the program and provide a consistent output format
 
 def main():
+    # result = find_skill_gaps("data/resume_d3_eval.txt", "data/jobs_d3_eval.db")
     result = find_skill_gaps("data/resume_d3.txt", "../week1/data/3_gold/jobs.db")
     print(result.model_dump())   # export model fields, convert Pydantic model object to dictionary, which can be easily converted to JSON if needed, and is more readable
     
