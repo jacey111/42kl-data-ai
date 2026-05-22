@@ -152,6 +152,97 @@ Output Example:
 
 ---
 
+# API / Function Reference
+
+## prompt_model.py
+Unified LLM interface supporting Ollama models like llama3.1, phi3, and deepseek-r1:1.5b
+
+
+Function:
+    
+    def prompt_model(model: str, prompt: str) -> str
+
+
+Purpose:
+    Prompt the model with the input prompt and return a text response. 
+    It will select the model based on the input model. 
+    
+Input: 
+    - model: the name of the model to use, must be in OLLAMA_MODELS
+    - prompt: the text prompt to send to the model
+
+Output: 
+    - the text response from the model, or an error message if any issue occurs    
+
+Key Features:
+    - Ollama API integration (localhost:11434)
+    - Google Gemini API integration
+    - Model routing logic
+    - Safe failure handling (no crashes)
+
+
+## tag_data.py
+LLM-powered ETL enrichment system for job postings
+
+
+Function:
+
+    def tag_data(db_url: str)
+
+
+Purpose:
+    Read jobs from SQLite and populate tech_stack.
+    1. Read job descriptions from database
+    2. Batch processing for efficiency
+    3. Send prompts to LLM
+    4. Parse structured skill output
+    5. Write results back to database
+
+Input: 
+    - database URL (file path for SQLite)
+
+Output: 
+    - None (updates tech_stack column in jobs table, and prints the results to the console)
+
+Key Features:
+    - Batch processing (rate limit safe)
+    - Retry mechanism
+    - JSON-safe parsing
+    - LLM error handling
+
+
+## find_skill_gaps.py
+Deterministic skill gap computation engine
+
+
+Function:
+
+    def find_skill_gaps(input_file_path: str, db_url: str) -> SkillGapResult
+
+
+Purpose:
+    Find skill gaps between the resume and the market.
+    1. Load resume text and market skills
+    2. Extract the skills from the resume that exist in the market skills
+    3. Get the skill gaps as the difference between market skills and resume skills
+    4. Return the results in a structured format using SkillGapResult
+    5. Handle any exceptions and return empty results if any error occurs 
+     
+Input:
+    - input_file_path: path to the resume text file
+    - db_url: path to the SQLite database containing job postings 
+    
+Output:
+    - SkillGapResult object containing the skill gaps, resume skills, and market skills
+
+Key Features:
+    - Regex-based skill extraction
+    - Alias expansion (C/C++, AWS, etc.)
+    - Set-based comparison for deterministic output
+
+    
+---
+
 # Data / Assumptions
 
 ## Data Sources

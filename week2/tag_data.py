@@ -7,7 +7,7 @@ from typing import List     # Type hinting for better code clarity
 
 from prompt_model import prompt_model  # LLM communication
 
-BATCH_SIZE = 3  # lower batch size for easier validation and debugging
+BATCH_SIZE = 3  # low token usage, stable JSON output, lower memory usage, less chance of timeout; TPM is 250k, but as I want to keep my RAM usage low, and ensure stable output, I keep the batch size small. If want to speed up, can increase batch size, but need to monitor the token usage and response quality
 MAX_RETRIES = 3 
 RETRY_DELAY = 5
 MODEL_NAME = "llama3.1"     # llama3.1 is good for structured data extraction, has stronger formatting discipline; phi3 is more optimized for lightweight inference, and deepseek-r1:1.5b is more optimized for search relevance and problem solving, usually shows step-by-step reasoning, which is not ideal for concise tech stack extraction.
