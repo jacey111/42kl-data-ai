@@ -61,7 +61,7 @@ async def chat(request: ChatRequest):
         else:
             # casual chat, call prompt_model function with the user message
             response_text = prompt_model(
-                model="gemini-2.5-flash",
+                model="phi3",
                 prompt=request.message
             )
 
