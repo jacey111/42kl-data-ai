@@ -13,7 +13,7 @@ class ChatRequest(BaseModel):
     message: str
     resume_text: str
 
-@app.post("/chat")
+@app.post("/chat") 
 async def chat(request: ChatRequest):
 
     try:
@@ -41,7 +41,7 @@ async def chat(request: ChatRequest):
             "job"
         ]
 
-        is_skill_request = any(msg in request.message.lower() for msg in skill_keywords)
+        is_skill_request = any(msg in request.message.lower() for msg in skill_keywords)    
         
         if is_skill_request or request.resume_text:
             
