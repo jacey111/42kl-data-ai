@@ -137,7 +137,7 @@
 
         function addMessage(text, type) {
             const msg = document.createElement("div");
-            msg.className = "msg " + (type === "user" ? "user-msg" : "bot-msg");    // assign class based on message type
+            msg.className = "msg " + (type === "user" ? "user-msg" : "bot-msg");    // set class name based on message type
             msg.innerText = text;  
             chatBox.appendChild(msg);   // add message to chat history
             chatBox.scrollTop = chatBox.scrollHeight; // scroll to bottom to show latest message
@@ -188,12 +188,11 @@
             // show loading indicator
             const loadingMsg = document.createElement("div");
             loadingMsg.className = "msg bot-msg";
-            loadingMsg.innerText = "Thinking...";
             chatBox.appendChild(loadingMsg);
             chatBox.scrollTop = chatBox.scrollHeight;   
 
             try {
-                // prepare form data
+                // FormData is used to send multipart/form-data which can include both text and files
                 const formData = new FormData();
                 formData.append("message", text || "Please analyze this resume");
                 
@@ -201,20 +200,21 @@
                     formData.append("pdf", pdfToSend);
                 }
 
-                // send to backend
+                // send to FastAPI backend server
                 const response = await fetch("/chat", {
-                    method: "POST",
-                    body: formData    
+                    method: "POST",     // send data
+                    body: formData
                 });
 
                 // remove loading message
                 loadingMsg.remove();
 
+                // check if response is successful
                 if (!response.ok) {
                     throw new Error(`${response.status}: ${response.statusText}`);
                 }
 
-                const data = await response.json();
+                const data = await response.json();     // parse response as JSON
                 
                 // add bot response to chat history
                 if (data.error) {
