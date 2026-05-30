@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
+import sys
+from pathlib import Path
 
-from src.week2.find_skill_gaps import find_skill_gaps
-from src.week2.prompt_model import prompt_model
+sys.path.insert(0, str(Path(__file__).parent))
+
+from week2.find_skill_gaps import find_skill_gaps
+from week2.prompt_model import prompt_model
 
 import tempfile
 
@@ -45,10 +49,12 @@ async def chat(request: ChatRequest):
         
         if is_skill_request or request.resume_text:
             
+            db_path = Path(__file__).parent / "week2" / "data" / "jobs_d3_eval.db"
+
             # resume analysis route, call find_skill_gaps function
             result = find_skill_gaps(
                 input_file_path=temp_path,
-                db_url="src/week2/data/jobs_d3_eval.db"
+                db_url=str(db_path)
             )
 
             response_text = (

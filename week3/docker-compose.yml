@@ -1,3 +1,7 @@
+networks:
+  app-network:
+    driver: bridge
+
 services:
 
   frontend:
@@ -16,6 +20,9 @@ services:
     depends_on:
       - backend
 
+    networks:
+      - app-network
+
   backend:
     image: backend
     pull_policy: build
@@ -28,3 +35,6 @@ services:
 
     env_file:
       - .env
+    
+    networks:
+      - app-network

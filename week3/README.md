@@ -39,7 +39,7 @@ Create a `.env` file at the root of the project.
 Example:
 
 ```env
-BACKEND_URL=http://backend:8000/chat
+BACKEND_URL=http://backend:8001/chat
 GOOGLE_API_KEY=your_google_api_key
 OLLAMA_URL=http://host.docker.internal:11434
 ```
@@ -283,7 +283,7 @@ Tested while browsering frontend, and get response from chatbot
 # Docker 
 
 - Frontend communicates with backend through Docker network
-- `BACKEND_URL=http://backend:8000/chat`
+- `BACKEND_URL=http://backend:8001/chat`
 - Containers build and run correctly using:
 docker compose up --build
 
